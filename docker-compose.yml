@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: helicorp_backend_api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: always
