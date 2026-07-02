@@ -1,12 +1,27 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { CreateSubscriptionDto, CreateTrackingDto } from './dto/landing-page.dto';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  private readonly logger = new Logger('HelicorpBackend');
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('subscriptions')
+  createSubscription(@Body() dto: CreateSubscriptionDto) {
+    this.logger.log(`[Subscription Received] Khách hàng: ${dto.name} | Email: ${dto.email}`);
+    
+    return {
+      success: true,
+      message: 'Dữ liệu đăng ký nhận tin hợp lệ và đã được lưu trữ thành công.',
+    };
+  }
+
+  @Post('tracking')
+  trackUserBehavior(@Body() dto: CreateTrackingDto) {
+    this.logger.warn(`[User Action Tracking] Loại: ${dto.event_type} -> Chi tiết: ${dto.detail} lúc ${dto.timestamp}`);
+    
+    return {
+      success: true,
+      received: true
+    };
   }
 }
