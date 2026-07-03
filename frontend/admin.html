@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealRing Smart - Admin Gateway</title>
+   
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/admin.js" defer></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+   
+    <div id="login-section" class="flex-grow flex items-center justify-center px-4 hidden">
+        <div class="w-full max-w-md bg-slate-800/40 border border-slate-700/60 p-8 rounded-2xl backdrop-blur-md shadow-xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">Hệ thống Quản trị</h2>
+                <p class="text-sm text-slate-400">Vui lòng đăng nhập bằng tài khoản HELICORP</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Tài khoản</label>
+                    <input type="text" id="username" required autocomplete="off" placeholder="admin" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 text-slate-100 placeholder-slate-600 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Mật khẩu</label>
+                    <input type="password" id="password" required placeholder="••••••••" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 text-slate-100 placeholder-slate-600 transition">
+                </div>
+                <div id="login-error" class="text-xs text-rose-400 hidden font-medium">❌ Tài khoản hoặc mật khẩu không chính xác.</div>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition cursor-pointer shadow-lg shadow-emerald-500/10">Đăng nhập</button>
+            </form>
+            
+            <div class="text-center">
+                <a href="/index.html" class="text-xs text-slate-500 hover:text-slate-400 transition">← Quay lại Landing Page</a>
+            </div>
+        </div>
+    </div>
+
+   
+    <div id="dashboard-section" class="flex-grow flex flex-col hidden">
+       
+        <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">HealRing Smart Analytics</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/index.html" class="text-xs text-slate-400 hover:text-slate-300 transition">Xem Trang Chủ</a>
+                <button onclick="handleLogout()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Đăng xuất</button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto p-6 space-y-8 w-full">
+           
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Tổng số Session</p>
+                    <p id="total-sessions" class="text-3xl font-bold mt-2 text-emerald-400">0</p>
+                </div>
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Tổng số Click</p>
+                    <p id="total-clicks" class="text-3xl font-bold mt-2 text-teal-400">0</p>
+                </div>
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Độ sâu cuộn trang TB</p>
+                    <p id="avg-scroll" class="text-3xl font-bold mt-2 text-cyan-400">0%</p>
+                </div>
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Thời gian On-site TB</p>
+                    <p id="avg-time" class="text-3xl font-bold mt-2 text-indigo-400">0s</p>
+                </div>
+            </div>
+
+           
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">Thiết bị truy cập</h3>
+                    <div class="h-64 flex justify-center"><canvas id="deviceChart"></canvas></div>
+                </div>
+                <div class="bg-slate-800/30 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">Xu hướng click tính năng</h3>
+                    <div class="h-64 flex justify-center"><canvas id="clickChart"></canvas></div>
+                </div>
+            </div>
+
+           
+            <div class="bg-slate-800/20 border border-slate-800 rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Nhật ký hành vi thời gian thực</h3>
+                    <button onclick="fetchAnalyticsData()" class="bg-slate-800 hover:bg-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition cursor-pointer">Làm mới dữ liệu</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-800/50 text-slate-400 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-6 py-3">Session ID</th>
+                                <th class="px-6 py-3">Thiết bị</th>
+                                <th class="px-6 py-3">Click Lần cuối</th>
+                                <th class="px-6 py-3">Cuộn tối đa</th>
+                                <th class="px-6 py-3">Thời gian ở lại</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body" class="divide-y divide-slate-800">
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+   
+    <footer class="w-full text-center py-4 border-t border-slate-800/40 text-xs text-slate-600">
+        &copy; 2026 HELICORP System. All rights reserved.
+    </footer>
+</body>
+</html>
