@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://helicorp-landingpage-test.onrender.com/api/:path*"
+    }
+  ]
+}
