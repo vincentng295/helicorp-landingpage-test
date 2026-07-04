@@ -1,19 +1,17 @@
-import { Controller, Post, Body, Logger, Get } from '@nestjs/common';
+import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { CreateSubscriptionDto, CreateTrackingDto } from './dto/landing-page.dto';
-import { AppService } from './app.service';
-
+import { AnalyticsService } from './analytics/analytics.service';
 @Controller()
 export class AppController {
   private readonly logger = new Logger('HelicorpBackend');
 
-  constructor(private readonly appService: AppService) {} 
-
-  private subscriptions: CreateSubscriptionDto[] = [];
+   constructor(private readonly analyticsService: AnalyticsService) {} 
 
   @Post('subscriptions')
   createSubscription(@Body() dto: CreateSubscriptionDto) {
     this.logger.log(`[Subscription Received] Khách hàng: ${dto.name} | Email: ${dto.email}`);
-    this.subscriptions.push(dto);
+    
+       this.analyticsService.addSubscription(dto);
     
     return {
       success: true,
@@ -21,11 +19,7 @@ export class AppController {
     };
   }
 
-  @Get('subscriptions')
-  getSubscriptions() {
-    return this.subscriptions;
-  }
-
+ 
   @Post('tracking')
   trackUserBehavior(@Body() dto: CreateTrackingDto) {
     this.logger.warn(`[User Action Tracking] Loại: ${dto.event_type} -> Chi tiết: ${dto.detail} lúc ${dto.timestamp}`);

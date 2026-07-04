@@ -182,7 +182,7 @@ function renderClickChart(clicksData = {}) {
 
 async function fetchSubscriptions(token) {
     try {
-        const res = await fetch(`${API_URL}/subscriptions`, {
+        const res = await fetch(`${API_URL}/analytics/subscriptions`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

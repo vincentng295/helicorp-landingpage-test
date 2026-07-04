@@ -1,14 +1,26 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AdminLoginDto } from '../dto/login.dto';
+import { CreateSubscriptionDto } from 'src/dto/landing-page.dto';
 
 @Injectable()
 export class AnalyticsService {
   private readonly logger = new Logger(AnalyticsService.name);
   private sessions: Map<string, any> = new Map();
 
+  private subscriptions: CreateSubscriptionDto[] = [];
 
   constructor(private readonly jwtService: JwtService) {}
+
+ 
+  addSubscription(dto: CreateSubscriptionDto) {
+    this.subscriptions.push(dto);
+  }
+
+ 
+  getSubscriptions(): CreateSubscriptionDto[] {
+    return this.subscriptions;
+  }
 
   /**
    * Xác thực thông tin tài khoản Admin hệ thống và cấp phát JWT
@@ -26,7 +38,6 @@ export class AnalyticsService {
     }
 
     this.logger.log(`[Auth] Admin logged in successfully.`);
-
 
     const payload = { username: loginDto.username, role: 'admin' };
     

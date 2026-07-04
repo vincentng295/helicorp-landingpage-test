@@ -27,4 +27,15 @@ export class AnalyticsController {
   async getAdminStats() {
     return this.analyticsService.getDashboardAnalytics();
   }
+
+  /**
+   * Endpoint lấy danh sách khách hàng đăng ký nhận tin
+   * Định tuyến: GET /api/analytics/subscriptions
+   * Bảo mật: Chỉ cho phép truy cập nếu đính kèm JWT hợp lệ
+   */
+  @Get('subscriptions')
+  @UseGuards(AuthGuard('jwt'))
+  async getSubscriptions() {
+    return this.analyticsService.getSubscriptions();
+  }
 }
