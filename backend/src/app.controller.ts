@@ -1,6 +1,8 @@
 import { Controller, Post, Body, Logger } from '@nestjs/common';
-import { CreateSubscriptionDto, CreateTrackingDto } from './dto/landing-page.dto';
+import { CreateSubscriptionDto } from './dto/landing-page.dto';
 import { AnalyticsService } from './analytics/analytics.service';
+import { TrackEventDto } from './dto/track-event.dto';
+
 @Controller()
 export class AppController {
   private readonly logger = new Logger('HelicorpBackend');
@@ -21,8 +23,10 @@ export class AppController {
 
  
   @Post('tracking')
-  trackUserBehavior(@Body() dto: CreateTrackingDto) {
-    this.logger.warn(`[User Action Tracking] Loại: ${dto.event_type} -> Chi tiết: ${dto.detail} lúc ${dto.timestamp}`);
+  trackUserBehavior(@Body() dto: TrackEventDto) {
+    this.logger.warn(`[User Action Tracking] Event: ${dto.eventName} | URL: ${dto.pageUrl} | Detail: ${dto.metadata?.detail}`);
+
+    this.analyticsService.addTrackingLog(dto);
     
     return {
       success: true,

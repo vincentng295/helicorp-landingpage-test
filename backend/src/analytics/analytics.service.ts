@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AdminLoginDto } from '../dto/login.dto';
 import { CreateSubscriptionDto } from 'src/dto/landing-page.dto';
+import { TrackEventDto } from '../dto/track-event.dto';
 
 @Injectable()
 export class AnalyticsService {
@@ -20,6 +21,50 @@ export class AnalyticsService {
  
   getSubscriptions(): CreateSubscriptionDto[] {
     return this.subscriptions;
+  }
+
+  addTrackingLog(dto: TrackEventDto) {
+    const { eventName, metadata } = dto;
+    
+    // Giải nén các thuộc tính động được truyền từ client qua metadata
+    const sessionId = metadata?.sessionId || 'unknown_session';
+    const detail = metadata?.detail || '';
+    const device = metadata?.device || 'desktop';
+    const timestamp = metadata?.timestamp || new Date().toISOString();
+
+    if (!this.sessions.has(sessionId)) {
+      this.sessions.set(sessionId, {
+        sessionId,
+        clicks: 0,
+        maxScrollPercent: 0,
+        durationSeconds: 0,
+        device: device.toLowerCase(),
+        lastClickedElement: '',
+        createdAt: timestamp,
+      });
+    }
+
+    const session = this.sessions.get(sessionId);
+
+    if (eventName === 'click_feature' || eventName === 'click_cta') {
+      session.clicks += 1;
+      session.lastClickedElement = detail;
+    } else if (eventName === 'scroll_view') {
+      if (detail.includes('%')) {
+        const percent = parseInt(detail.replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(percent) && percent > session.maxScrollPercent) {
+          session.maxScrollPercent = percent;
+        }
+      } else if (detail === 'technical_specs_section') {
+        if (session.maxScrollPercent < 50) session.maxScrollPercent = 50;
+      }
+    } else if (eventName === 'session_ping') {
+      const start = new Date(session.createdAt).getTime();
+      const current = new Date(timestamp).getTime();
+      session.durationSeconds = Math.max(session.durationSeconds, Math.round((current - start) / 1000));
+    }
+
+    this.sessions.set(sessionId, session);
   }
 
   /**

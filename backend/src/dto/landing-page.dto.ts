@@ -9,17 +9,3 @@ export class CreateSubscriptionDto {
   @IsNotEmpty({ message: 'Email không được để trống' })
   email: string;
 }
-
-export class CreateTrackingDto {
-  @IsString()
-  @IsNotEmpty()
-  event_type: string;
-
-  @IsString()
-  @IsNotEmpty()
-  detail: string;
-
-  @IsString()
-  @IsOptional()
-  timestamp: string;
-}
