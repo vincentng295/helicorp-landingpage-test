@@ -1,4 +1,4 @@
-const API_URL = '/api/analytics';
+const API_URL = '/api';
 const LOGIN_URL = '/api/analytics/login';
 const TOKEN_KEY = 'helicorp_jwt_token';
 
@@ -84,7 +84,7 @@ async function fetchAnalyticsData() {
     }
 
     try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(`${API_URL}/analytics`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -112,7 +112,7 @@ async function fetchAnalyticsData() {
 
         renderDeviceChart(data.devices);
         renderClickChart(data.clicksData);
-
+        await fetchSubscriptions(token);
 
         const tbody = document.getElementById('logs-table-body');
         tbody.innerHTML = (data.recentLogs || []).map(log => `
@@ -178,4 +178,31 @@ function renderClickChart(clicksData = {}) {
             plugins: { legend: { display: false } }
         }
     });
+}
+
+async function fetchSubscriptions(token) {
+    try {
+        const res = await fetch(`${API_URL}/subscriptions`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.ok) {
+            const subs = await res.json();
+            const tbody = document.getElementById('subscriptions-table-body');
+            if (tbody) {
+                tbody.innerHTML = subs.map(sub => `
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="px-6 py-4 text-sm font-medium text-slate-100">${sub.name}</td>
+                        <td class="px-6 py-4 text-sm text-emerald-400">${sub.email}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching subscriptions:", err);
+    }
 }
